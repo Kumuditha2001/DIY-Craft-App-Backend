@@ -1,48 +1,56 @@
-//package com.craft.craft.post.service;
-//
-//import com.craft.craft.post.dto.PostResponse;
-//import com.craft.craft.post.model.Post;
-//import com.craft.craft.post.repository.PostRepository;
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.stereotype.Service;
-//
-//import java.util.Date;
-//import java.util.List;
-//import java.util.stream.Collectors;
-//
-//@Service
-//@RequiredArgsConstructor
-//public class PostService {
-//
-//    private final PostRepository postRepository;
-//
-//    public PostResponse createPost(String public_id, String caption) {
-//        Post post = new Post();
-//        post.setPublic_id(public_id);
-//        post.setCaption(caption);
-//        post.setCreatedAt(new Date());
-//
-//        Post savedPost = postRepository.save(post);
-//        return PostResponse.fromEntity(savedPost);
-//    }
-//
-//    public List<PostResponse> getAllPosts() {
-//        return postRepository.findAll()
-//                .stream()
-//                .map(PostResponse::fromEntity)
-//                .collect(Collectors.toList());
-//    }
-//
-//    public List<PostResponse> getPostsByPublicId(String public_id) {
-//        return postRepository.findByPublic_id(public_id)
-//                .stream()
-//                .map(PostResponse::fromEntity)
-//                .collect(Collectors.toList());
-//    }
-//
-//    public PostResponse getPostById(String id) {
-//        return postRepository.findById(id)
-//                .map(PostResponse::fromEntity)
-//                .orElseThrow(() -> new RuntimeException("Post not found with id: " + id));
-//    }
-//}
+package com.craft.craft.post.service;
+
+import com.craft.craft.post.model.Post;
+import com.craft.craft.post.repository.PostRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class PostService {
+
+    @Autowired
+    private PostRepository postRepository;
+
+    // Get all posts
+    public List<Post> getAllPosts() {
+        return postRepository.findAll();
+    }
+
+    // Get post by ID
+    public Post getPostById(String id) {
+        return postRepository.findById(id).orElse(null);
+    }
+
+    // Create post
+    public Post createPost(Post post) {
+        // Set creation time if not provided
+        if (post.getCreatedAt() == null) {
+            post.setCreatedAt(LocalDateTime.now().toString());
+        }
+        return postRepository.save(post);
+    }
+
+    // Update post
+    public Post updatePost(String id, Post post) {
+        Post existingPost = postRepository.findById(id).orElse(null);
+        if (existingPost != null) {
+            existingPost.setCaption(post.getCaption());
+            return postRepository.save(existingPost);
+        }
+        return null;
+    }
+
+    // Delete post
+    public boolean deletePost(String id) {
+        if (postRepository.existsById(id)) {
+            postRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+}
