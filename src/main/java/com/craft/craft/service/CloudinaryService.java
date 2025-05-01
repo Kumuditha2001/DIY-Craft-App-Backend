@@ -137,4 +137,11 @@ public class CloudinaryService {
 
         }
     }
+
+    public Map<?, ?> getAllMedia(String resourceType) throws Exception {
+        return cloudinary.api().resources(ObjectUtils.asMap(
+                "resource_type", resourceType,
+                "max_results", 100 // you can adjust max results
+        ));
+    }
 }
