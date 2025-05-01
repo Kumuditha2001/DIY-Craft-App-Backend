@@ -95,4 +95,52 @@ public class CloudinaryService {
             throw new IOException("Cloudinary deletion failed: " + e.getMessage(), e);
         }
     }
+
+    public Map<?, ?> listAllMedia(String resourceType, int maxResults) throws Exception {
+        try {
+            Map<String, Object> options = new HashMap<>();
+            options.put("resource_type", resourceType);
+            options.put("type", "upload"); // Only show uploaded resources
+            options.put("max_results", maxResults);
+
+            logger.info("Fetching {} media files (max: {})", resourceType, maxResults);
+
+            Map<?, ?> result = cloudinary.api().resources(options);
+            logger.debug("Cloudinary list response: {}", result);
+
+            return result;
+        } catch (Exception e) {
+            logger.error("Failed to list media files", e);
+            throw new Exception("Failed to list media: " + e.getMessage());
+        }
+    }
+
+    public Map<?, ?> getMediaByPublicId(String publicId, String resourceType) throws Exception {
+        try {
+            if (publicId == null || publicId.trim().isEmpty()) {
+                throw new IllegalArgumentException("Public ID cannot be empty");
+            }
+
+            Map<String, Object> options = new HashMap<>();
+            options.put("resource_type", resourceType);
+
+            logger.info("Fetching media with public ID: {}", publicId);
+
+            Map<?, ?> result = cloudinary.api().resource(publicId, options);
+            logger.debug("Cloudinary resource response: {}", result);
+
+            return result;
+        } catch (Exception e) {
+            logger.error("Failed to fetch media with public ID: {}", publicId, e);
+            throw new Exception("Failed to fetch media: " + e.getMessage());
+
+        }
+    }
+
+    public Map<?, ?> getAllMedia(String resourceType) throws Exception {
+        return cloudinary.api().resources(ObjectUtils.asMap(
+                "resource_type", resourceType,
+                "max_results", 100 // you can adjust max results
+        ));
+    }
 }
