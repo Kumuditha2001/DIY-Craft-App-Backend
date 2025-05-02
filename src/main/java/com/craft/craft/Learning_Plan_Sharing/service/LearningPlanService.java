@@ -28,7 +28,8 @@ public class LearningPlanService {
     private LearningRepository learninRepo;
 
     public LearningPlan createLearningPlan(String userId, String profilPic, String headline,
-    String fullname, String title, String description, String timeline, MultipartFile thumbnail, MultipartFile video)
+            String fullname, String title, String description, String timeline, MultipartFile thumbnail,
+            MultipartFile video)
             throws IOException {
 
         String resourceUrl = null;
@@ -48,12 +49,12 @@ public class LearningPlanService {
 
         if (thumbnail != null && !thumbnail.isEmpty()) {
             String uniqueFileName = UUID.randomUUID() + "_" + thumbnail.getOriginalFilename();
-    
+
             Map uploadResult = cloudinary.uploader().upload(thumbnail.getBytes(),
                     ObjectUtils.asMap(
                             "resource_type", "image",
                             "public_id", "learning_thumbnails/" + uniqueFileName));
-    
+
             thumbnailUrl = uploadResult.get("secure_url").toString();
         }
 
@@ -69,13 +70,24 @@ public class LearningPlanService {
         plan.setResources(resourceUrl);
         plan.setCreatedAt(new Date());
 
-
         return learninRepo.save(plan);
     }
 
     // Get All
     public List<LearningPlan> getAllPlans() {
         return learninRepo.findAll();
+    }
+
+    public LearningPlan getPlanById(String id) {
+        try {
+            ObjectId objectId = new ObjectId(id);
+            return learninRepo.findById(objectId)
+                    .orElse(null);
+        } catch (Exception e) {
+
+            System.out.println("Error fetching Learning Plan with ID " + id);
+            return null;
+        }
     }
 
     // Update by ID
@@ -110,7 +122,7 @@ public class LearningPlanService {
                             ObjectUtils.asMap(
                                     "resource_type", "image",
                                     "public_id", "learning_thumbnails/" + uniqueFileName));
-    
+
                     String thumbnailUrl = uploadResult.get("secure_url").toString();
                     plan.setThumbnail(thumbnailUrl);
                 }

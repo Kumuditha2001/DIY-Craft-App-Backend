@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +37,7 @@ public class LearningPlanController {
             @RequestParam("fullname") String fullname,
             @RequestParam("title") String title,
             @RequestParam("description") String description,
-            @RequestParam("timeline") String timeline, 
+            @RequestParam("timeline") String timeline,
             @RequestParam(value = "thumbnail") MultipartFile thumbnail,
             @RequestParam(value = "video") MultipartFile video) {
 
@@ -60,6 +62,18 @@ public class LearningPlanController {
         return ResponseEntity.ok(LearninPlan_Service.getAllPlans());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<LearningPlan> getPlanById(@PathVariable String id) {
+        LearningPlan plan = LearninPlan_Service.getPlanById(id);
+
+        if (plan != null) {
+            return ResponseEntity.ok(plan);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        }
+    }
+
     @PutMapping(value = "/update", consumes = "multipart/form-data")
     public ResponseEntity<?> updateLearningPlan(
             @RequestParam("id") String id,
@@ -70,10 +84,12 @@ public class LearningPlanController {
             @RequestParam(value = "video", required = false) MultipartFile video) {
 
         try {
-            LearningPlan updated = LearninPlan_Service.updateLearningPlan(id, title, description,timeline, thumbnail, video);
+            LearningPlan updated = LearninPlan_Service.updateLearningPlan(id, title, description, timeline, thumbnail,
+                    video);
             return ResponseEntity.ok(Map.of("message", "Learning plan updated successfully!", "data", updated));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("message", "Error updating learning plan: " + e.getMessage()));
+            return ResponseEntity.status(500)
+                    .body(Map.of("message", "Error updating learning plan: " + e.getMessage()));
         }
     }
 
