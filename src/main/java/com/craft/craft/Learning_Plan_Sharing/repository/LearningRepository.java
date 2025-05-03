@@ -7,4 +7,6 @@ import com.craft.craft.Learning_Plan_Sharing.model.LearningPlan;
 
 public interface LearningRepository extends MongoRepository<LearningPlan, ObjectId> {
 
+    
 }
+//test

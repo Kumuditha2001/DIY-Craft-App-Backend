@@ -1,6 +1,5 @@
 package com.craft.craft.Learning_Plan_Sharing.model;
 
-import java.util.Date;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -16,22 +15,19 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "learningPlan")
-public class LearningPlan {
+@Document(collection = "learnFollow")
+public class LearnFollow {
 
     @Id
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId id;
 
-    private String userId; 
-    private String profilPic;
-    private String headline;   
-    private String fullname;   
-    private String title;    
-    private String description; 
-    private String timeLine;         
-    private String thumbnail;
-    private String resources;  
-    private Date createdAt;
+    private String planId;
+    private String planTitle;
+    private String userId;
+    private String name;
+    private String email;
+    private String watchedDuration ;
+    private String isCompleted ;
+    private String progress ;
 }
-//test
